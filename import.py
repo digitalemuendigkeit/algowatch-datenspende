@@ -36,7 +36,5 @@ for i in range(1, len(meta_data)-1):
 # filter meta data frame
 meta_data_df = df[df.search_type == "news"]
 meta_data_df = meta_data_df.reset_index()
-meta_data_df = meta_data_df.drop(
-    ['plugin_id', 'index'], axis=1
-)
+meta_data_df = meta_data_df.drop(['plugin_id', 'index'], axis=1)
 
