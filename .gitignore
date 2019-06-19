@@ -1,2 +1,5 @@
 # do not push files of these types
 *.json
+
+# do not push these folders
+rbo/
