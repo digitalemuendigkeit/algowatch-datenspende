@@ -72,13 +72,17 @@ for result in results:
 
 # %%
 #create result list
+#extract keywords
 keywords = meta_data_df.keyword.unique()
-result_lists = np.zeros(len(keywords))
+#initialize empty list
+result_lists = [None] * (len(keywords))
 
 for idx, keyword in enumerate(keywords):
-    tmp = np.zeros(len(meta_data_df[meta_data_df.keyword == keyword]))
-    for jdx, search in meta_data_df[meta_data_df.keyword == keyword].iterrows():
-        tmp[jdx] =(hashmap[search.result_hash]
+    tmp = []
+    for _, search in meta_data_df[meta_data_df.keyword == keyword].iterrows():
+        #check whether results are empty before appending
+        if(hashmap[search.result_hash] is not None):
+            tmp.append(hashmap[search.result_hash])
     result_lists[idx] = tmp
 
 #%%
