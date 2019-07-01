@@ -13,7 +13,7 @@
 #     name: python3
 # ---
 
-# %%
+#%%
 #import packages
 import json
 import os.path
@@ -21,6 +21,7 @@ import pandas as pd
 import numpy as np
 
 # %%
+#import json file
 # create system specific path to json file
 path = os.path.join(
     'data', 
@@ -33,7 +34,7 @@ with open(path, 'r') as json_file:
 
 # %%
 # separate result lists from meta data
-result_lists = json_data[-1] 
+results = json_data[-1] 
 meta_data = json_data[0:(len(json_data)-1)]
 
 # create data frame with meta data
@@ -57,7 +58,27 @@ print(df.head())
 meta_data_df = df[df.search_type == "news"]
 meta_data_df = meta_data_df.reset_index()
 meta_data_df = meta_data_df.drop(
-    ['plugin_id', 'index'], axis=1
+    ['plugin_id', 'index', 'plugin_version'], axis=1
 )
 
 # %%
+#create hashmap
+hashmap = dict()
+for result in results:
+    tmp = dict(result)
+    value = tmp['result']
+    key = tmp['result_hash']
+    hashmap[key] = value
+
+# %%
+#create result list
+keywords = meta_data_df.keyword.unique()
+result_lists = []
+
+for idx, keyword in enumerate(keywords):
+    tmp = []
+    for _, search in meta_data_df[meta_data_df.keyword == keyword].iterrows():
+        tmp.append(hashmap[search.result_hash])
+    result_lists[idx] = tmp
+
+#%%
