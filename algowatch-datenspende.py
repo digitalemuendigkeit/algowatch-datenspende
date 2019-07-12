@@ -86,3 +86,9 @@ for idx, keyword in enumerate(keywords):
     result_lists[idx] = tmp
 
 #%%
+# add names to result lists
+result_lists = dict(zip(keywords, result_lists))
+
+
+
+#%%
