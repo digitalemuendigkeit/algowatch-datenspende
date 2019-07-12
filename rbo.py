@@ -228,4 +228,4 @@ def rbo_dict(dict1, dict2, p):
 if __name__ in ("__main__", "__console__"):
     import doctest
 
-doctest.testmod()
+# doctest.testmod()
