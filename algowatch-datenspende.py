@@ -99,7 +99,7 @@ for kw in keywords:
     for i in range(len(result_lists[kw])):
         tmp = []
         for j in range(len(result_lists[kw][i])):
-            tmp.append(result_lists[kw][i][j]["medium"])
+            tmp.append(result_lists[kw][i][j]["sourceUrl"])
         res.append(tmp)
 
 
