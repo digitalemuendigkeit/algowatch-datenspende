@@ -100,13 +100,15 @@ for kw in keywords:
         tmp = []
         for j in range(len(result_lists[kw][i])):
             tmp.append(result_lists[kw][i][j]["sourceUrl"])
-    res[kw].append(tmp)
+        res[kw].append(tmp)
 
 
 #%%
 import k_means
 
-k_means.k_means_rbo(res['SPD'], 1, 1)
+arg = res['SPD']
+
+k_means.k_means_rbo(arg, 3, 2)
 
 
 #%%
