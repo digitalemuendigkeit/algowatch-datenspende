@@ -104,3 +104,9 @@ for kw in keywords:
 
 
 #%%
+import k_means
+
+k_means.k_means_rbo(res['SPD'], 1, 1)
+
+
+#%%
