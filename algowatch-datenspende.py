@@ -19,6 +19,8 @@ import json
 import os.path
 import pandas as pd
 import numpy as np
+import k_means
+
 
 # %%
 #import json file
@@ -104,18 +106,12 @@ for kw in keywords:
 
 
 #%%
-import k_means
 
-arg = res['SPD']
-
-k_means.k_means_rbo(arg, 3, 2)
-
+clus, centr = k_means.k_means_rbo(res['SPD'], 3, 2)
 
 #%%
 
-blub = res['FDP']
-
-k_means.k_means_rbo(blub, 4, 3)
+k_means.k_means_rbo(res['FDP'], 4, 3)
 
 
 #%%
