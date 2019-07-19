@@ -93,14 +93,14 @@ result_lists = dict(zip(keywords, result_lists))
 
 #%%
 
-res = []
+res = dict((kw, []) for kw in keywords)
 
 for kw in keywords:
     for i in range(len(result_lists[kw])):
         tmp = []
         for j in range(len(result_lists[kw][i])):
             tmp.append(result_lists[kw][i][j]["sourceUrl"])
-        res.append(tmp)
+    res[kw].append(tmp)
 
 
 #%%
