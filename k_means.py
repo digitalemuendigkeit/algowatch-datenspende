@@ -5,7 +5,7 @@ import pandas as pd
 
 #%%
 
-def k_ls_rbo(lol, k, n_iterations):
+def k_means_rbo(lol, k, n_iterations):
     """k-means algorithm adjusted for list clustering"""
 
     # choose k centroids
@@ -34,8 +34,9 @@ def k_ls_rbo(lol, k, n_iterations):
             clusters[i] = rbo_dist.index(min(rbo_dist)) + 1
     
     df = pd.DataFrame(
-        {'index': [elem for elem in range(len(lol))],
-         'cluster': clusters
+        {
+            'index': [elem for elem in range(len(lol))],
+            'cluster': clusters
         }
     )
 
