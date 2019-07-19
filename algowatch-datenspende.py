@@ -109,9 +109,5 @@ for kw in keywords:
 
 clus, centr = k_means.k_means_rbo(res['SPD'], 3, 2)
 
-#%%
-
-k_means.k_means_rbo(res['FDP'], 4, 3)
-
 
 #%%
