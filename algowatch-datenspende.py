@@ -112,3 +112,10 @@ k_means.k_means_rbo(arg, 3, 2)
 
 
 #%%
+
+blub = res['FDP']
+
+k_means.k_means_rbo(blub, 4, 3)
+
+
+#%%
