@@ -31,8 +31,8 @@ def k_means_rbo(lol, k, n_iterations):
         for i in idx:
             rbo_dist = []
             for c in centroids:
-                a = res_tmp(i)
-                b = res_tmp(c)
+                a = res_tmp[i]
+                b = res_tmp[c]
                 rbo_dist.append(rbo.rbo_ext(a, b, 0.9))
             
             clusters[i] = rbo_dist.index(min(rbo_dist))
