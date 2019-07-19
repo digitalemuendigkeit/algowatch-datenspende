@@ -40,14 +40,31 @@ def k_means_rbo(lol, k, n_iterations):
     df = pd.DataFrame(
         {
             'index': [elem for elem in range(len(lol))],
-            'cluster': clusters
+            'cluster': clusters,
+            'mean': np.repeat
         }
     )
 
     return df
 
 
-
+def update_centroids(self, df, res):
+    #empty list for new centroids
+    centroids = np.repeat(None, k)
+    #iterate over clusters
+    for k in df.cluster.unique():
+        #select lists for cluster
+        cluster = df[df.cluster == k]
+        for i in cluster.index:
+            tmp = []
+            #compute rbo to all other lists in the same cluster
+            for j in cluster.index:
+                tmp.append(rbo_ext(res[i], res[j], 0.9))
+            #save mean of rbo to other results in cluster
+            cluster.mean[i] = np.mean(tmp)
+        centroids[k] = cluster.idxmin(axis=0)[2]
+    return centroids
+            
                 
 
 
