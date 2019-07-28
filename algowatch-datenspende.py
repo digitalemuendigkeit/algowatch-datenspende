@@ -14,16 +14,18 @@
 # ---
 
 #%%
-#import packages
+
+# import packages
 import json
 import os.path
 import pandas as pd
 import numpy as np
 import k_means
 
+#%%
 
-# %%
-#import json file
+# import json file
+
 # create system specific path to json file
 path = os.path.join(
     'data', 
@@ -34,7 +36,8 @@ path = os.path.join(
 with open(path, 'r') as json_file:
     json_data = json.load(json_file)
 
-# %%
+#%%
+
 # separate result lists from meta data
 results = json_data[-1] 
 meta_data = json_data[0:(len(json_data)-1)]
@@ -52,10 +55,9 @@ for i in range(1, len(meta_data)-1):
         index=tmp.index
     )
     df = pd.concat([df, tmp])
-    
-print(df.head())
 
-# %%
+#%%
+
 # filter meta data frame
 meta_data_df = df[df.search_type == "news"]
 meta_data_df = meta_data_df.reset_index()
@@ -63,8 +65,9 @@ meta_data_df = meta_data_df.drop(
     ['plugin_id', 'index', 'plugin_version'], axis=1
 )
 
-# %%
-#create hashmap
+#%%
+
+# create hashmap
 hashmap = dict()
 for result in results:
     tmp = dict(result)
@@ -72,11 +75,14 @@ for result in results:
     key = tmp['result_hash']
     hashmap[key] = value
 
-# %%
-#create result list
-#extract keywords
+#%%
+
+# create result list
+
+# extract keywords
 keywords = meta_data_df.keyword.unique()
-#initialize empty list
+
+# initialize empty list
 result_lists = [None] * (len(keywords))
 
 for idx, keyword in enumerate(keywords):
@@ -88,15 +94,16 @@ for idx, keyword in enumerate(keywords):
     result_lists[idx] = tmp
 
 #%%
+
 # add names to result lists
 result_lists = dict(zip(keywords, result_lists))
 
-
-
 #%%
 
+# initialize dictionary with keywords as keys
 res = dict((kw, []) for kw in keywords)
 
+# unpack result_lists into res
 for kw in keywords:
     for i in range(len(result_lists[kw])):
         tmp = []
@@ -104,10 +111,12 @@ for kw in keywords:
             tmp.append(result_lists[kw][i][j]["sourceUrl"])
         res[kw].append(tmp)
 
-
 #%%
 
-clus, centr = k_means.k_means_rbo(res['SPD'], 3, 2)
+# subset res to create test set
+res_test = res['FDP'][0:50]
 
+# apply k_means_rbo on res_test
+clus, centr = k_means.k_means_rbo(res_test, 3, 3)
 
 #%%
