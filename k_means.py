@@ -92,17 +92,9 @@ def update_centroids(df, res, n_clust):
             # save mean of rbo to other results in cluster
             cluster.at[i, 'mean_rbo'] = np.mean(tmp)
 
-        # convert mean_rbo to float type
-        # cluster['mean_rbo'] = cluster.mean_rbo.astype(float)
-
         # update new centroids list        
         centroids_updated[clust] = cluster.idxmax(axis=0)['mean_rbo']
         
-    # remove index for empty clusters
-    # if np.any(centroids_updated[:], -1):
-    #     centroids_updated = np.delete(centroids_updated, np.where(centroids_updated == -1))
-    #     print("k was reduced due to empty cluster")
-
     return centroids_updated
 
 #%%
@@ -117,6 +109,7 @@ def is_over_exit_thresh(res, centroids, centroids_new, exit_thresh):
     for i in range(len(centroids)):
         thresh_list.append(rbo.rbo_ext(res[centroids[i]], res[centroids_new[i]], 0.9))
     
+    # if all rbo scores between last two centroids are over threshold, return True
     if all(elem > exit_thresh for elem in thresh_list):
         return True
     else:
