@@ -59,7 +59,7 @@ for i in range(1, len(meta_data)-1):
 #%%
 
 # filter meta data frame
-meta_data_df = df[df.search_type == "news"]
+meta_data_df = df[df.search_type == "search"]
 meta_data_df = meta_data_df.reset_index()
 meta_data_df = meta_data_df.drop(
     ['plugin_id', 'index', 'plugin_version'], axis=1
@@ -113,10 +113,17 @@ for kw in keywords:
 
 #%%
 
+# for reloading in case of changes
+from importlib import reload
+reload(k_means)
+
+#%%
+
 # subset res to create test set
-res_test = res['FDP'][0:50]
+res_test = res['FDP'][0:200]
 
 # apply k_means_rbo on res_test
-clus, centr = k_means.k_means_rbo(res_test, 3, 3)
+clus, centr = k_means.k_means_rbo(res_test, 4, 10, 0.95)
+
 
 #%%

@@ -6,7 +6,7 @@ import pandas as pd
 
 #%%
 
-def k_means_rbo(lol, k, n_iterations):
+def k_means_rbo(lol, k, max_iter, exit_th = 0.9):
     """k-means algorithm adjusted for list clustering"""
 
     # preparation
@@ -17,7 +17,7 @@ def k_means_rbo(lol, k, n_iterations):
     centroids.sort()
     
     # initialize clusters
-    clusters = np.repeat(None, len(res_tmp))
+    clusters = np.repeat(-1, len(res_tmp))
     counter = 0
     for c in centroids:
         clusters[c] = counter
@@ -28,12 +28,12 @@ def k_means_rbo(lol, k, n_iterations):
         {
             'elem_index': [elem for elem in range(len(res_tmp))],
             'cluster': clusters,
-            'mean_rbo': np.repeat(None, len(res_tmp))
+            'mean_rbo': np.repeat(0.0, len(res_tmp))
         }
     )
 
     # k-means iterations
-    for steps in range(n_iterations):
+    for steps in range(max_iter):
         
         # test print
         print(centroids)
@@ -41,7 +41,9 @@ def k_means_rbo(lol, k, n_iterations):
         # create an index list and drop the indices of the centroids
         idx = [elem for elem in range(len(res_tmp))]
         drop_counter = 0
-        for k_idx in centroids:
+        iter_centroids = centroids
+        iter_centroids.sort()
+        for k_idx in iter_centroids:
             idx.pop(k_idx - drop_counter)
             drop_counter = drop_counter + 1
 
@@ -51,7 +53,11 @@ def k_means_rbo(lol, k, n_iterations):
             for c in centroids:
                 rbo_dist.append(rbo.rbo_ext(res_tmp[i], res_tmp[c], 0.9))
             df.iloc[i, 1] = rbo_dist.index(max(rbo_dist))
-        centroids = update_centroids(df, res_tmp, k)
+        tmp = update_centroids(df, res_tmp, k)
+        if is_over_exit_thresh(res_tmp, centroids, tmp, exit_th):
+            print("passed exit threshold")
+            break
+        centroids = tmp
     
     # drop mean_rbo column
     df = df.drop(columns = 'mean_rbo')
@@ -64,13 +70,14 @@ def update_centroids(df, res, n_clust):
     """update centroids after k-means iteration"""
     
     # empty list for new centroids
-    centroids_updated = np.repeat(None, n_clust)
+    centroids_updated = np.repeat(-1, n_clust)
     
     # iterate over clusters
-    for k in df.cluster.unique():
+    for clust in df.cluster.unique():
         
         # subset data frame for cluster k
-        cluster = df[df.cluster == k]
+        cluster = df[df.cluster == clust]
+        cluster.set_index('elem_index', drop=False, inplace=True)
         
         # iterate over cluster k
         for i in cluster.elem_index:
@@ -83,14 +90,35 @@ def update_centroids(df, res, n_clust):
                 tmp.append(rbo.rbo_ext(res[i], res[j], 0.9))
             
             # save mean of rbo to other results in cluster
-            cluster[cluster['elem_index'] == i][2] = np.mean(tmp)
+            cluster.at[i, 'mean_rbo'] = np.mean(tmp)
+
+        # convert mean_rbo to float type
+        # cluster['mean_rbo'] = cluster.mean_rbo.astype(float)
+
+        # update new centroids list        
+        centroids_updated[clust] = cluster.idxmax(axis=0)['mean_rbo']
         
-        # update new centroids list
-        centroids_updated[k] = cluster['elem_index'].idxmax(axis=0)
-    
-    # sort updated centroids
-    centroids_updated.sort()
+    # remove index for empty clusters
+    # if np.any(centroids_updated[:], -1):
+    #     centroids_updated = np.delete(centroids_updated, np.where(centroids_updated == -1))
+    #     print("k was reduced due to empty cluster")
 
     return centroids_updated
 
 #%%
+
+def is_over_exit_thresh(res, centroids, centroids_new, exit_thresh):
+    """test for exit criterium"""
+
+    # initiate list containing rbo comparison between last two centroid sets
+    thresh_list = []
+
+    # iterate over centroid sets
+    for i in range(len(centroids)):
+        thresh_list.append(rbo.rbo_ext(res[centroids[i]], res[centroids_new[i]], 0.9))
+    
+    if all(elem > exit_thresh for elem in thresh_list):
+        return True
+    else:
+        return False
+
