@@ -62,7 +62,7 @@ def k_means_rbo(lol, k, max_iter, exit_th = 0.9):
     # drop mean_rbo column
     df = df.drop(columns = 'mean_rbo')
 
-    return df, centroids
+    return df, centroids, compute_distortion(res_tmp, df)
 
 #%%
 
@@ -114,4 +114,49 @@ def is_over_exit_thresh(res, centroids, centroids_new, exit_thresh):
         return True
     else:
         return False
+
+#%%
+
+def compute_distortion(res, df):
+    """compute distortion within clusters for elbow method"""
+    
+    distortions = pd.DataFrame(
+        {
+            'cluster': np.array([]),
+            'sum_rbo': np.array([])
+        }
+    )
+
+    # iterate over clusters
+    for clust in df.cluster.unique():
+        
+        # subset data frame for cluster k
+        cluster = df[df.cluster == clust]
+        cluster.set_index('elem_index', drop=False, inplace=True)
+        
+        # iterate over cluster k
+        for i in cluster.elem_index:
+            
+            # initialize temporary list for mean rbo scores
+            tmp = []
+           
+            # compute rbo to all other lists in the same cluster
+            for j in cluster.elem_index:
+                tmp.append(rbo.rbo_ext(res[i], res[j], 0.9))
+            
+            # save mean of rbo to other results in cluster
+            cluster.at[i, 'mean_rbo'] = np.mean(tmp)
+
+        # create temporary data frame with current distortion
+        tmp = pd.DataFrame(
+            {
+                'cluster': np.array([clust]),
+                'sum_rbo': np.sum(cluster['mean_rbo'].values)
+            }
+        )
+
+        # append to distortions data frame
+        distortions = pd.concat([distortions, tmp])
+        
+    return distortions
 

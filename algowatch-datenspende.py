@@ -117,10 +117,13 @@ for kw in keywords:
 res_test = res['FDP'][0:200]
 
 # apply k_means_rbo on res_test
-clus, centr = k_means.k_means_rbo(res_test, 5, 10, 0.95)
+clus, centr, distort = k_means.k_means_rbo(res_test, 5, 10, 0.95)
 
 #%%
 
 # for reloading in case of changes
 from importlib import reload
 reload(k_means)
+
+
+#%%
