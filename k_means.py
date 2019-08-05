@@ -151,7 +151,7 @@ def compute_distortion(res, df):
         tmp = pd.DataFrame(
             {
                 'cluster': np.array([clust]),
-                'sum_rbo': np.sum(cluster['mean_rbo'].values)
+                'sum_rbo': np.mean(cluster['mean_rbo'].values)
             }
         )
 
