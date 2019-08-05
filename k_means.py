@@ -123,7 +123,8 @@ def compute_distortion(res, df):
     distortions = pd.DataFrame(
         {
             'cluster': np.array([]),
-            'sum_rbo': np.array([])
+            'sum_rbo': np.array([]),
+            'n_clust': np.array([])
         }
     )
 
@@ -151,7 +152,8 @@ def compute_distortion(res, df):
         tmp = pd.DataFrame(
             {
                 'cluster': np.array([clust]),
-                'sum_rbo': np.mean(cluster['mean_rbo'].values)
+                'sum_rbo': np.mean(cluster['mean_rbo'].values),
+                'n_clust': np.array([cluster.shape[0] / df.shape[0]])
             }
         )
 
