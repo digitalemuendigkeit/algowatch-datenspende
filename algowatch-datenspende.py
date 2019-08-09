@@ -123,7 +123,7 @@ clus, centr, distort = k_means.k_means_rbo(res_test, 5, 10, 0.95)
 #%%
 
 # subset res to create a second test set
-res_test2 = res['FDP'][0:50]
+res_test2 = res['FDP'][0:100]
 
 # set maximum k for elbow criterium
 max_k = 10
@@ -140,7 +140,7 @@ for k_iter in range(1, max_k+1, 1):
             res_test2, k_iter, 10, 0.95
         )
         k_iter_distort_list.append(
-            (tmp_distort['sum_rbo'] * tmp_distort['n_clust']).sum()
+            (tmp_distort['mean_rbo'] * tmp_distort['cluster_weight']).sum()
         )
     distort_list.append(max(k_iter_distort_list))
 
