@@ -1,5 +1,4 @@
 Visualisierung der Ergebnisse
-Elbow Criterium
 Auswertungsmethode überlegen
 Virtual Machine besorgen
 Optimieren
