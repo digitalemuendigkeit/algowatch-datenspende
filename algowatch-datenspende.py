@@ -148,6 +148,13 @@ for k_iter in range(1, max_k+1, 1):
 plt.plot(k_vals, distort_list, 'bo')
 plt.show()
 
+#%%
+
+# subset res to create test set
+res_test3 = res['FDP']
+
+# apply k_means_rbo on res_test
+clus3, centr3, distort3 = k_means.k_means_rbo(res_test3, 5, 20, 0.95)
 
 #%%
 
