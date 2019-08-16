@@ -118,7 +118,7 @@ for kw in keywords:
 res_test = res['FDP'][0:100]
 
 # apply k_means_rbo on res_test
-clus, centr, distort = k_means.k_means_rbo(res_test, 5, 10, 0.95)
+clus, centr, distort = k_means.k_means_rbo(res_test, 5, 20, 0.95)
 
 #%%
 

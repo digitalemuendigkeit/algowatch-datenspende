@@ -9,15 +9,12 @@ import pandas as pd
 def k_means_rbo(lol, k, max_iter, exit_th = 0.9):
     """k-means algorithm adjusted for list clustering"""
 
-    # preparation
-    res_tmp = lol
-
     # choose k centroids at random (initialization)
-    centroids = np.random.choice(len(res_tmp), k, replace=False)
+    centroids = np.random.choice(len(lol), k, replace=False)
     centroids.sort()
     
     # initialize clusters
-    clusters = np.repeat(-1, len(res_tmp))
+    clusters = np.repeat(-1, len(lol))
     counter = 0
     for c in centroids:
         clusters[c] = counter
@@ -26,9 +23,9 @@ def k_means_rbo(lol, k, max_iter, exit_th = 0.9):
     # initialize data frame
     df = pd.DataFrame(
         {
-            'elem_index': [elem for elem in range(len(res_tmp))],
+            'elem_index': [elem for elem in range(len(lol))],
             'cluster': clusters,
-            'mean_rbo': np.repeat(0.0, len(res_tmp))
+            'mean_rbo': np.repeat(0.0, len(lol))
         }
     )
 
@@ -39,7 +36,7 @@ def k_means_rbo(lol, k, max_iter, exit_th = 0.9):
         print(centroids)
 
         # create an index list and drop the indices of the centroids
-        idx = [elem for elem in range(len(res_tmp))]
+        idx = [elem for elem in range(len(lol))]
         drop_counter = 0
         iter_centroids = centroids
         iter_centroids.sort()
@@ -51,10 +48,10 @@ def k_means_rbo(lol, k, max_iter, exit_th = 0.9):
         for i in idx:
             rbo_dist = []
             for c in centroids:
-                rbo_dist.append(rbo.rbo_ext(res_tmp[i], res_tmp[c], 0.9))
+                rbo_dist.append(rbo.rbo_ext(lol[i], lol[c], 0.9))
             df.iloc[i, 1] = rbo_dist.index(max(rbo_dist))
-        tmp = update_centroids(df, res_tmp, k)
-        if is_over_exit_thresh(res_tmp, centroids, tmp, exit_th):
+        tmp = update_centroids(df, lol, k)
+        if is_over_exit_thresh(lol, centroids, tmp, exit_th):
             print("passed exit threshold")
             break
         centroids = tmp
@@ -62,7 +59,7 @@ def k_means_rbo(lol, k, max_iter, exit_th = 0.9):
     # drop mean_rbo column
     df = df.drop(columns = 'mean_rbo')
 
-    return df, centroids, compute_distortion(res_tmp, df)
+    return df, centroids, compute_distortion(lol, df)
 
 #%%
 
