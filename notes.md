@@ -3,3 +3,4 @@ Auswertungsmethode überlegen
 Virtual Machine besorgen
 Optimieren
 evtl andere Clustering-Algorithmen
+Docker?
