@@ -11,3 +11,4 @@ https://cran.r-project.org/web/packages/bibliometrix/vignettes/bibliometrix-vign
   * multi-dimensional scaling
   * correspondence analysis
   * multiple correspondence analysis
+  * TSNE (t-distributed stochastic neighbor embedding)
