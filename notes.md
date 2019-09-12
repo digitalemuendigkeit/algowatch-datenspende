@@ -1,7 +1,6 @@
 Visualisierung der Ergebnisse
 Auswertungsmethode überlegen
 Virtual Machine besorgen
-Optimieren
 evtl andere Clustering-Algorithmen
 Docker?
 
@@ -12,3 +11,8 @@ https://cran.r-project.org/web/packages/bibliometrix/vignettes/bibliometrix-vign
   * correspondence analysis
   * multiple correspondence analysis
   * TSNE (t-distributed stochastic neighbor embedding)
+
+Gilt die Dreiecksungleichung?
+Auf wie vielen Dimensionen arbeiten wir wirklich (1 oder n)?
+Anwendungsgebiete finden
+Code profilen und optimieren (Bottlenecks?)
