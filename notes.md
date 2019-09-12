@@ -16,3 +16,6 @@ Gilt die Dreiecksungleichung?
 Auf wie vielen Dimensionen arbeiten wir wirklich (1 oder n)?
 Anwendungsgebiete finden
 Code profilen und optimieren (Bottlenecks?)
+
+Neue Idee:
+  Graph mit Ergebnislisten als Knoten und ungerichtete Kanten mit Gewicht RBO -> Pruning und schauen, ob der Graph an einem bestimmten Punkt in unzusammenhängende Subgraphen "zerfällt"
