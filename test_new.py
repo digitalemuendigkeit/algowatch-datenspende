@@ -3,6 +3,7 @@
 # import packages
 import json
 import os.path
+import importlib
 import pandas as pd
 import numpy as np
 import rbo
@@ -97,26 +98,73 @@ for kw in keywords:
 import clustering_utilities as cu
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
+from sklearn.manifold import MDS
 
 #%%
 
 # prepare
-cdu = res['CDU'].copy()
-rbo_mat = cu.compute_rbo_matrix(cdu, 0.9)
+fdp = res['FDP'].copy()
+rbo_mat = cu.compute_rbo_matrix(fdp, 0.9)
 df = pd.DataFrame(rbo_mat)
 
 # %%
 
 # conduct elbow method
-clustering.plot_elbow(11, df)
+cu.plot_elbow(11, df)
 
 #%%
 
 # https://towardsdatascience.com/machine-learning-algorithms-part-9-k-means-example-in-python-f2ad05ed5203
 # conduct k-means clustering analysis
-kmeans = KMeans(n_clusters=4, init='k-means++', max_iter=300, n_init=10, random_state=0)
-pred = kmeans.fit_predict(df)
+kmeans = KMeans(n_clusters=5, init='k-means++', max_iter=3000, n_init=10, random_state=0)
+pred = kmeans.fit(df)
 
 #%%
 
-clus = cu.create_clus_output(cdu, pred)
+clus = cu.create_clus_output(fdp, pred.labels_)
+# clus.to_csv('fdp.csv', sep=';')
+
+#%%
+
+# reduce to two dimensions
+embedding = MDS(n_components=2)
+X_transformed = embedding.fit_transform(df)
+
+#%%
+
+# format 2d data
+xt = pd.DataFrame(X_transformed, columns=['dim1', 'dim2'])
+xt = pd.concat([xt, pd.DataFrame(pred.labels_, columns=['cluster'])], axis=1)
+
+plt.scatter(x=xt.dim1, y=xt.dim2, c=xt.cluster, alpha=0.3)
+plt.show()
+
+#%%
+
+# reduce to three dimensions
+embedding = MDS(n_components=3)
+X_transformed = embedding.fit_transform(df)
+xt = pd.DataFrame(X_transformed, columns=['dim1', 'dim2', 'dim3'])
+xt = pd.concat([xt, pd.DataFrame(pred.labels_, columns=['cluster'])], axis=1)
+
+#%%
+
+# 3d visualization with plotly
+import plotly.express as px
+fig = px.scatter_3d(xt, x='dim1', y='dim2', z='dim3',
+              color='cluster', opacity=0.3)
+
+# tight layout
+fig.update_layout(margin=dict(l=0, r=0, b=0, t=0))
+
+#%%
+
+flat_list = [item for sublist in fdp for item in sublist]
+flat_set = set(flat_list)
+df_new = pd.DataFrame(flat_list, columns=['url'])
+df_new = df_new[df_new.url != 'null']
+df_new['url'].value_counts()
+
+#%%
+
+importlib.reload(cu)

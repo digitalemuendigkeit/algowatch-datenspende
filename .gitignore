@@ -2,10 +2,10 @@
 *.json
 *.csv
 *.xslx
+*.ipynb
+*.html
 
 # do not push these folders
 rbo/
 .ipynb_checkpoints/
 .vscode/.ropeproject/config.py
-fdp.xlsx
-~$fdp.xlsx
