@@ -163,7 +163,7 @@ flat_list = [item for sublist in fdp for item in sublist]
 flat_set = set(flat_list)
 df_new = pd.DataFrame(flat_list, columns=['url'])
 df_new = df_new[df_new.url != 'null']
-df_new['url'].value_counts()
+counts = df_new['url'].value_counts()
 
 #%%
 
