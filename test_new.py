@@ -93,51 +93,30 @@ for kw in keywords:
 
 #%%
 
-fdp = res['FDP'].copy()
-
-
-#%%
-
-rbo_matrix = np.zeros(shape=(len(fdp), len(fdp)))
-
-for i in range(len(fdp)):
-    for j in range(i, len(fdp)):
-        rbo_matrix[i][j] = rbo_matrix[j][i] = rbo.rbo_ext(fdp[i], fdp[j], p=0.9)
-
-#%%
-
-fdp_df = pd.DataFrame(rbo_matrix)
-
-#%%
-
+# import for k-means clustering
+import clustering_utilities as cu
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 
 #%%
 
-# https://towardsdatascience.com/machine-learning-algorithms-part-9-k-means-example-in-python-f2ad05ed5203
+# prepare
+cdu = res['CDU'].copy()
+rbo_mat = cu.compute_rbo_matrix(cdu, 0.9)
+df = pd.DataFrame(rbo_mat)
 
-wcss = []
-for i in range(1, 11):
-    kmeans = KMeans(n_clusters=i, init='k-means++', max_iter=300, n_init=10, random_state=0)
-    kmeans.fit(fdp_df)
-    wcss.append(kmeans.inertia_)
-plt.plot(range(1, 11), wcss)
-plt.title('Elbow Method')
-plt.xlabel('Number of clusters')
-plt.ylabel('WCSS')
-plt.show()
+# %%
+
+# conduct elbow method
+clustering.plot_elbow(11, df)
 
 #%%
 
 # https://towardsdatascience.com/machine-learning-algorithms-part-9-k-means-example-in-python-f2ad05ed5203
+# conduct k-means clustering analysis
+kmeans = KMeans(n_clusters=4, init='k-means++', max_iter=300, n_init=10, random_state=0)
+pred = kmeans.fit_predict(df)
 
-kmeans = KMeans(n_clusters=2, init='k-means++', max_iter=300, n_init=10, random_state=0)
-pred_y = kmeans.fit_predict(fdp_df)
+#%%
 
-#%%
-clus_data = pd.DataFrame(zip(fdp, pred_y), columns=['result_list', 'cluster'])
-#%%
-clus_data[clus_data.cluster == 0]
-#%%
-clus_data[clus_data.cluster == 1]
+clus = cu.create_clus_output(cdu, pred)

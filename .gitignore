@@ -1,7 +1,11 @@
 # do not push files of these types
 *.json
+*.csv
+*.xslx
 
 # do not push these folders
 rbo/
 .ipynb_checkpoints/
 .vscode/.ropeproject/config.py
+fdp.xlsx
+~$fdp.xlsx
