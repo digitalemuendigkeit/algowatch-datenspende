@@ -7,5 +7,6 @@
 
 # do not push these folders
 rbo/
+Datasets/
 .ipynb_checkpoints/
 .vscode/.ropeproject/config.py

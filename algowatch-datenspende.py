@@ -22,16 +22,22 @@ import pandas as pd
 import numpy as np
 import k_means
 import matplotlib.pyplot as plt
+import time
+import datetime
+
+#%%
+# get list of json files
+datasets =[]
+for file in os.listdir("./Datasets"):
+    if file.endswith(".json"):
+        datasets.append(file)
+
 
 #%%
 
-# import json file
-
-# create system specific path to json file
-path = os.path.join(
-    'data', 
-    'datenspende_btw17_public_data_2017-09-29.json'
-)
+# import json files (only use one Dataset for debugging!)
+for dataset in datasets:
+    path = os.path.join('./Datasets', dataset)
 
 # read json file
 with open(path, 'r') as json_file:
@@ -94,13 +100,10 @@ for idx, keyword in enumerate(keywords):
             tmp.append(hashmap[search.result_hash])
     result_lists[idx] = tmp
 
-#%%
-
 # add names to result lists
 result_lists = dict(zip(keywords, result_lists))
 
 #%%
-
 # initialize dictionary with keywords as keys
 res = dict((kw, []) for kw in keywords)
 
@@ -154,7 +157,10 @@ plt.show()
 res_test3 = res['FDP']
 
 # apply k_means_rbo on res_test
+start = time.time()
 clus3, centr3, distort3 = k_means.k_means_rbo(res_test3, 5, 20, 0.95)
+end = time.time()
+print("Required time for one Keyword:", end - start)
 
 #%%
 
@@ -163,4 +169,18 @@ from importlib import reload
 reload(k_means)
 
 
-#%%
+#%% test significance of search time for clustering
+
+# array of  
+clusterResults =[]
+kwMetadata = meta_data_df[meta_data_df['keyword']=='FDP']
+kwMetadata = kwMetadata.reset_index(drop=True)
+kwMetadata = pd.merge(kwMetadata, clus3, left_index=True, right_index=True)
+# convert search_date to timestamp
+kwMetadata['search_date'] = kwMetadata['search_date'].apply(datetime.datetime.strptime, args=['%Y-%m-%d %H:%M'])
+# loop over all clusters (use range for ascending order)
+for idx in range(0, clus3.cluster.max()):
+    print(kwMetadata[kwMetadata['cluster']==idx]['search_date'].mean())
+
+# TODO run anova on timestamps
+# %%

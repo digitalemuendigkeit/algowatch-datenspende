@@ -1,6 +1,5 @@
 Visualisierung der Ergebnisse
 Auswertungsmethode überlegen
-Virtual Machine besorgen
 evtl andere Clustering-Algorithmen
 Docker?
 
