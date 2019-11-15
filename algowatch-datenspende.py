@@ -24,6 +24,11 @@ import k_means
 import matplotlib.pyplot as plt
 import time
 import datetime
+import scipy
+import statsmodels
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+import multiprocessing as mp
 
 #%%
 # get list of json files
@@ -123,7 +128,10 @@ res_test = res['FDP'][0:100]
 # apply k_means_rbo on res_test
 clus, centr, distort = k_means.k_means_rbo(res_test, 5, 20, 0.95)
 
-#%%
+#%% Plot ellbow plot for first 100 results of FDP in parallel
+
+# pool for parallel execution
+# pool = mp.Pool(mp.cpu_count()-1)
 
 # subset res to create a second test set
 res_test2 = res['FDP'][0:100]
@@ -136,16 +144,20 @@ distort_list = []
 k_vals = list(range(1, 11, 1))
 
 # run algorithm for each k up to max_k (10 iterations each)
+start = time.time()
 for k_iter in range(1, max_k+1, 1):
     k_iter_distort_list = []
     for i in range(10):
-        tmp_clus, tmp_centr, tmp_distort = k_means.k_means_rbo(
+        _, _, tmp_distort = k_means.k_means_rbo(
             res_test2, k_iter, 10, 0.95
         )
         k_iter_distort_list.append(
             (tmp_distort['mean_rbo'] * tmp_distort['cluster_weight']).sum()
         )
     distort_list.append(max(k_iter_distort_list))
+end = time.time()
+print("Required time for ellbow plot:", end - start)
+# pool.close() 
 
 # plot results
 plt.plot(k_vals, distort_list, 'bo')
@@ -169,7 +181,7 @@ from importlib import reload
 reload(k_means)
 
 
-#%% test significance of search time for clustering
+#%% merge cluster into df
 
 # array of  
 clusterResults =[]
@@ -179,8 +191,20 @@ kwMetadata = pd.merge(kwMetadata, clus3, left_index=True, right_index=True)
 # convert search_date to timestamp
 kwMetadata['search_date'] = kwMetadata['search_date'].apply(datetime.datetime.strptime, args=['%Y-%m-%d %H:%M'])
 # loop over all clusters (use range for ascending order)
-for idx in range(0, clus3.cluster.max()):
+for idx in range(0, clus3.cluster.max() + 1):
     print(kwMetadata[kwMetadata['cluster']==idx]['search_date'].mean())
 
+# store for later use without long computation
+kwMetadata.to_pickle('workingData/kwMetadata.pkl')
+
+# %% load already computed cluster
+kwMetadata = pd.read_pickle('workingData/kwMetadata.pkl')
+
+# %% test significance of search time for clustering
 # TODO run anova on timestamps
+anova = ols('search_date ~ C(cluster)', data=kwMetadata).fit()
+anova.summary()
+# table = sm.stats.anova_lm(anova, typ=2)
+
+
 # %%
