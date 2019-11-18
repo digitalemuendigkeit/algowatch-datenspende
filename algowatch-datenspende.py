@@ -33,7 +33,7 @@ import multiprocessing as mp
 #%%
 # get list of json files
 datasets =[]
-for file in os.listdir("./Datasets"):
+for file in os.listdir(os.path.join('Datasets')):
     if file.endswith(".json"):
         datasets.append(file)
 
@@ -42,7 +42,7 @@ for file in os.listdir("./Datasets"):
 
 # import json files (only use one Dataset for debugging!)
 for dataset in datasets:
-    path = os.path.join('./Datasets', dataset)
+    path = os.path.join('Datasets', dataset)
 
 # read json file
 with open(path, 'r') as json_file:

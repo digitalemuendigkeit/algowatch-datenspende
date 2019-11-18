@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 
 # create system specific path to json file
 path = os.path.join(
-    'data', 
-    'datenspende_btw17_public_data_2017-09-29.json'
+    'Datasets', 
+    'datenspende_btw17_public_data_2017-07-06.json'
 )
 
 # read json file
@@ -46,9 +46,12 @@ for i in range(1, len(meta_data)-1):
 # filter meta data frame
 meta_data_df = df[df.search_type == "search"]
 meta_data_df = meta_data_df.reset_index()
-meta_data_df = meta_data_df.drop(
-    ['plugin_id', 'index', 'plugin_version'], axis=1
-)
+
+for c in ['plugin_id', 'index', 'plugin_version']:
+    try:
+        meta_data_df = meta_data_df.drop(c, axis=1)
+    except:
+        continue
 
 #%%
 
