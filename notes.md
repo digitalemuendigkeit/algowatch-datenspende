@@ -25,3 +25,5 @@ news Ergebnisse anschauen:
       * -> unterschiedliche News-Portale / Cluster mit ähnlichen News-Portalen
   * Ansatz 2:
       * gleicher Ansatz wie oben
+
+resultslist bereinigen: Listen die nur "google" oder andere einträge die nicht mit https anfangen entfernen

@@ -8,14 +8,18 @@ import pandas as pd
 import numpy as np
 import rbo
 import matplotlib.pyplot as plt
+import helpers
 
-#%%
+#%% get list of json files
+datasets =[]
+for file in os.listdir(os.path.join('Datasets')):
+    if file.endswith(".json"):
+        datasets.append(file)
 
-# create system specific path to json file
-path = os.path.join(
-    'Datasets', 
-    'datenspende_btw17_public_data_2017-07-06.json'
-)
+#%% import json files (only use one Dataset for debugging!)
+for dataset in datasets:
+    path = os.path.join('Datasets', dataset)
+
 
 # read json file
 with open(path, 'r') as json_file:
@@ -41,9 +45,7 @@ for i in range(1, len(meta_data)-1):
     )
     df = pd.concat([df, tmp])
 
-#%%
-
-# filter meta data frame
+#%% filter meta data frame
 meta_data_df = df[df.search_type == "search"]
 meta_data_df = meta_data_df.reset_index()
 
@@ -53,9 +55,7 @@ for c in ['plugin_id', 'index', 'plugin_version']:
     except:
         continue
 
-#%%
-
-# create hashmap
+#%% create hashmap
 hashmap = dict()
 for result in results:
     tmp = dict(result)
@@ -63,7 +63,7 @@ for result in results:
     key = tmp['result_hash']
     hashmap[key] = value
 
-#%%
+#%% create result lists
 
 # extract keywords
 keywords = meta_data_df.keyword.unique()
@@ -82,7 +82,7 @@ for idx, keyword in enumerate(keywords):
 # add names to result lists
 result_lists = dict(zip(keywords, result_lists))
 
-#%%
+#%% create dict of keywords and result lists
 
 # initialize dictionary with keywords as keys
 res = dict((kw, []) for kw in keywords)
@@ -95,27 +95,21 @@ for kw in keywords:
             tmp.append(result_lists[kw][i][j]["sourceUrl"])
         res[kw].append(tmp)
 
-#%%
-
-# import for k-means clustering
+#%% import for k-means clustering
 import clustering_utilities as cu
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.manifold import MDS
 
-#%%
-
-# prepare
+#%% compute RBO matrix for keyword
 fdp = res['FDP'].copy()
 rbo_mat = cu.compute_rbo_matrix(fdp, 0.9)
 df = pd.DataFrame(rbo_mat)
 
-# %%
-
-# conduct elbow method
+# %% conduct elbow method
 cu.plot_elbow(11, df)
 
-#%%
+#%% apply k means
 
 # https://towardsdatascience.com/machine-learning-algorithms-part-9-k-means-example-in-python-f2ad05ed5203
 # conduct k-means clustering analysis
@@ -171,3 +165,54 @@ counts = df_new['url'].value_counts()
 #%%
 
 importlib.reload(cu)
+
+
+#%% merge cluster into  metadata df
+import datetime
+
+# array of  
+clusterResults =[]
+kwMetadata = meta_data_df[meta_data_df['keyword']=='FDP']
+kwMetadata = kwMetadata.reset_index(drop=True)
+kwMetadata = pd.merge(kwMetadata, clus['cluster'], left_index=True, right_index=True)
+# convert search_date to timestamp
+kwMetadata['search_date'] = kwMetadata['search_date'].apply(datetime.datetime.strptime, args=['%Y-%m-%d %H:%M'])
+kwMetadata['timestamp'] = kwMetadata['search_date'].apply(helpers.get_timestamp)
+# loop over all clusters (use range for ascending order)
+for idx in range(0, clus.cluster.max() + 1):
+    print(kwMetadata[kwMetadata['cluster']==idx]['search_date'].mean())
+
+# store for later use without long computation
+kwMetadata.to_pickle('workingData/kwMetadata.pkl')
+
+# %% load already computed cluster
+kwMetadata = pd.read_pickle('workingData/kwMetadata.pkl')
+
+# %% test significance of search time for clustering
+
+# TODO run anova on timestamps
+import scipy.stats as stats
+# import statsmodels
+# import statsmodels.api as sm
+# from statsmodels.formula.api import ols
+
+# test normality
+stat, shapiro_p = stats.shapiro(kwMetadata['timestamp'])
+print('Shapori statistics=%.3f, p=%.3f' % (stat, shapiro_p))
+
+# test homogeneity  of variances
+groups = []
+gb = kwMetadata.groupby('cluster')
+[groups.append(gb.get_group(x)['timestamp']) for x in gb.groups]
+stat, levene_p = stats.levene(*groups)
+print('Levene statistics=%.3f, p=%.3f' % (stat, levene_p))
+
+# only conduct anova if assumptions are met
+if(shapiro_p < 0.5 and levene_p > 0.5):
+    # anova = ols('timestamp ~ C(cluster)', data=kwMetadata).fit()
+    # anova.summary()
+    # table = sm.stats.anova_lm(anova, typ=2)
+    stat, p = stats.f_oneway(*groups)
+else:
+    stat, p = stats.kruskal(*groups)
+
