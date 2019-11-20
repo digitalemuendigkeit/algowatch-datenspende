@@ -4,6 +4,7 @@
 *.xslx
 *.ipynb
 *.html
+*.pyc
 
 # do not push these folders
 rbo/

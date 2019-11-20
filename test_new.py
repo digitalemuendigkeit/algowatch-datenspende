@@ -25,7 +25,7 @@ for dataset in datasets:
 with open(path, 'r') as json_file:
     json_data = json.load(json_file)
 
-#%%
+#%% read json data to df
 
 # separate result lists from meta data
 results = json_data[-1] 
@@ -107,13 +107,14 @@ rbo_mat = cu.compute_rbo_matrix(fdp, 0.9)
 df = pd.DataFrame(rbo_mat)
 
 # %% conduct elbow method
-cu.plot_elbow(11, df)
+wcss = cu.plot_elbow(11, df)
+n_clusters = cu.optimal_number_of_clusters(10, wcss)
 
 #%% apply k means
 
 # https://towardsdatascience.com/machine-learning-algorithms-part-9-k-means-example-in-python-f2ad05ed5203
 # conduct k-means clustering analysis
-kmeans = KMeans(n_clusters=5, init='k-means++', max_iter=3000, n_init=10, random_state=0)
+kmeans = KMeans(n_clusters= n_clusters, init='k-means++', max_iter=3000, n_init=10, random_state=0)
 pred = kmeans.fit(df)
 
 #%%
@@ -193,7 +194,6 @@ kwMetadata = pd.read_pickle('workingData/kwMetadata.pkl')
 
 # %% test significance of search time for clustering
 
-# TODO run anova on timestamps
 import scipy.stats as stats
 # import statsmodels
 # import statsmodels.api as sm
@@ -201,14 +201,14 @@ import scipy.stats as stats
 
 # test normality
 stat, shapiro_p = stats.shapiro(kwMetadata['timestamp'])
-print('Shapori statistics=%.3f, p=%.3f' % (stat, shapiro_p))
+print('Shapori statistics = %.3f, p = %.3f' % (stat, shapiro_p))
 
 # test homogeneity  of variances
 groups = []
 gb = kwMetadata.groupby('cluster')
 [groups.append(gb.get_group(x)['timestamp']) for x in gb.groups]
 stat, levene_p = stats.levene(*groups)
-print('Levene statistics=%.3f, p=%.3f' % (stat, levene_p))
+print('Levene statistics = %.3f, p = %.3f' % (stat, levene_p))
 
 # only conduct anova if assumptions are met
 if(shapiro_p < 0.5 and levene_p > 0.5):
@@ -219,7 +219,7 @@ if(shapiro_p < 0.5 and levene_p > 0.5):
 else:
     stat, p = stats.kruskal(*groups)
 
-print('Anova/Kruskal statistics=%.3f, p=%.3f' % (stat, levene_p))
+print('Anova/Kruskal statistics = %.3f, p = %.3f' % (stat, levene_p))
 
 
 # %%
