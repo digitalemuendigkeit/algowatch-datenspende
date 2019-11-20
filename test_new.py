@@ -180,7 +180,10 @@ kwMetadata['search_date'] = kwMetadata['search_date'].apply(datetime.datetime.st
 kwMetadata['timestamp'] = kwMetadata['search_date'].apply(helpers.get_timestamp)
 # loop over all clusters (use range for ascending order)
 for idx in range(0, clus.cluster.max() + 1):
-    print(kwMetadata[kwMetadata['cluster']==idx]['search_date'].mean())
+    # std in hours
+    std = kwMetadata[kwMetadata['cluster']==idx]['timestamp'].std()/3600
+    mean = kwMetadata[kwMetadata['cluster']==idx]['search_date'].mean()
+    print('Average search time cluster %d: %s, std:%.2f' % (idx, mean.strftime("%H:%M"), std))
 
 # store for later use without long computation
 kwMetadata.to_pickle('workingData/kwMetadata.pkl')
@@ -216,3 +219,7 @@ if(shapiro_p < 0.5 and levene_p > 0.5):
 else:
     stat, p = stats.kruskal(*groups)
 
+print('Anova/Kruskal statistics=%.3f, p=%.3f' % (stat, levene_p))
+
+
+# %%
