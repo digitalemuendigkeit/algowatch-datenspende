@@ -179,6 +179,8 @@ kwMetadata = pd.merge(kwMetadata, clus['cluster'], left_index=True, right_index=
 # convert search_date to timestamp
 kwMetadata['search_date'] = kwMetadata['search_date'].apply(datetime.datetime.strptime, args=['%Y-%m-%d %H:%M'])
 kwMetadata['timestamp'] = kwMetadata['search_date'].apply(helpers.get_timestamp)
+# extract country
+kwMetadata['country'] = kwMetadata['geo_location'].apply(helpers.get_country)
 # loop over all clusters (use range for ascending order)
 for idx in range(0, clus.cluster.max() + 1):
     # std in hours
@@ -223,11 +225,22 @@ print('Anova/Kruskal statistics = %.3f, p = %.3f' % (stat, p))
 
 
 # %% plot boxplot for time stamps
+# from matplotlib import dates
 
+# d = groups[:,0]
+# s = d/1000
+# dts = map(datetime.datetime.fromtimestamp, s)
+# fds = dates.date2num(dts) # converted
+
+# matplotlib date format object
+# hfmt = dates.DateFormatter('%H:%M')
 fig, ax = plt.subplots()
-
 ax.boxplot(groups)
+# ax.yaxis.set_major_locator(dates.MinuteLocator())
+# ax.yaxis.set_major_formatter(hfmt)
 plt.show()
 
 
-# %%
+# %% Test for languages
+kwMetadata.groupby(['cluster','country']).count()
+kwMetadata[(kwMetadata.country=="DE") & (kwMetadata.cluster==2)].groupby('language').count()
