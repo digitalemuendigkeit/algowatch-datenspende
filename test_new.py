@@ -189,7 +189,7 @@ for idx in range(0, clus.cluster.max() + 1):
 # store for later use without long computation
 kwMetadata.to_pickle('workingData/kwMetadata.pkl')
 
-# %% load already computed cluster
+# %% load already computed clusters
 kwMetadata = pd.read_pickle('workingData/kwMetadata.pkl')
 
 # %% test significance of search time for clustering
@@ -219,7 +219,15 @@ if(shapiro_p < 0.5 and levene_p > 0.5):
 else:
     stat, p = stats.kruskal(*groups)
 
-print('Anova/Kruskal statistics = %.3f, p = %.3f' % (stat, levene_p))
+print('Anova/Kruskal statistics = %.3f, p = %.3f' % (stat, p))
+
+
+# %% plot boxplot for time stamps
+
+fig, ax = plt.subplots()
+
+ax.boxplot(groups)
+plt.show()
 
 
 # %%
