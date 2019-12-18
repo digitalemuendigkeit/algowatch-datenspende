@@ -13,17 +13,18 @@ def compute_rbo_matrix(kw_list, p):
     return rbo_mat
 
 # https://towardsdatascience.com/machine-learning-algorithms-part-9-k-means-example-in-python-f2ad05ed5203
-def plot_elbow(max_k, X):
+def plot_elbow(max_k, X, showPlot=True):
     wcss = []
     for i in range(1, max_k):
         kmeans = KMeans(n_clusters=i, init='k-means++', max_iter=300, n_init=10, random_state=0)
         kmeans.fit(X)
         wcss.append(kmeans.inertia_)
-    plt.plot(range(1, 11), wcss)
-    plt.title('Elbow Method')
-    plt.xlabel('Number of clusters')
-    plt.ylabel('WCSS')
-    plt.show()
+    if(showPlot):
+        plt.plot(range(1, 11), wcss)
+        plt.title('Elbow Method')
+        plt.xlabel('Number of clusters')
+        plt.ylabel('WCSS')
+        plt.show()
     return wcss
 
 # https://stackoverflow.com/questions/12550929/how-to-make-all-lists-in-a-list-of-lists-the-same-length-by-adding-to-them

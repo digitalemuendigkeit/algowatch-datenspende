@@ -102,8 +102,9 @@ from sklearn.cluster import KMeans
 from sklearn.manifold import MDS
 
 #%% compute RBO matrix for keyword
-fdp = res['FDP'].copy()
-rbo_mat = cu.compute_rbo_matrix(fdp, 0.9)
+test_keyword = 'SPD'
+kw_df= res[test_keyword].copy()
+rbo_mat = cu.compute_rbo_matrix(kw_df, 0.9)
 df = pd.DataFrame(rbo_mat)
 
 # %% conduct elbow method
@@ -119,8 +120,8 @@ pred = kmeans.fit(df)
 
 #%%
 
-clus = cu.create_clus_output(fdp, pred.labels_)
-# clus.to_csv('fdp.csv', sep=';')
+clus = cu.create_clus_output(kw_df, pred.labels_)
+# clus.to_csv('kw_df.csv', sep=';')
 
 #%%
 
@@ -157,7 +158,7 @@ fig.update_layout(margin=dict(l=0, r=0, b=0, t=0))
 
 #%%
 
-flat_list = [item for sublist in fdp for item in sublist]
+flat_list = [item for sublist in kw_df for item in sublist]
 flat_set = set(flat_list)
 df_new = pd.DataFrame(flat_list, columns=['url'])
 df_new = df_new[df_new.url != 'null']
@@ -173,7 +174,7 @@ import datetime
 
 # array of  
 clusterResults =[]
-kwMetadata = meta_data_df[meta_data_df['keyword']=='FDP']
+kwMetadata = meta_data_df[meta_data_df['keyword']==test_keyword]
 kwMetadata = kwMetadata.reset_index(drop=True)
 kwMetadata = pd.merge(kwMetadata, clus['cluster'], left_index=True, right_index=True)
 # convert search_date to timestamp
@@ -189,10 +190,10 @@ for idx in range(0, clus.cluster.max() + 1):
     print('Average search time cluster %d: %s, std:%.2f' % (idx, mean.strftime("%H:%M"), std))
 
 # store for later use without long computation
-kwMetadata.to_pickle('workingData/kwMetadata.pkl')
+kwMetadata.to_pickle('workingData/kwMetadata_' + test_keyword + '.pkl')
 
 # %% load already computed clusters
-kwMetadata = pd.read_pickle('workingData/kwMetadata.pkl')
+kwMetadata = pd.read_pickle('workingData/kwMetadata_' + test_keyword + '.pkl')
 
 # %% test significance of search time for clustering
 
@@ -241,6 +242,18 @@ ax.boxplot(groups)
 plt.show()
 
 
-# %% Test for languages
+# %% Show frequency of languages
 kwMetadata.groupby(['cluster','country']).count()
 kwMetadata[(kwMetadata.country=="DE") & (kwMetadata.cluster==2)].groupby('language').count()
+
+for idx in range(0, kwMetadata.cluster.max() + 1):
+    german = kwMetadata[(kwMetadata.country=="DE") & (kwMetadata.cluster==idx)]['keyword'].count()
+    total = kwMetadata[(kwMetadata.cluster==idx)]['keyword'].count()
+    print('Share searches from DE in cluster %d: %.2f %% (N=%d)' % (idx, (german / total * 100), total))
+
+# %% Scatterplot of cluster over time
+fig, ax = plt.subplots()
+ax.scatter(x=kwMetadata.timestamp, y=kwMetadata.cluster, c= kwMetadata.cluster, alpha= 0.4)
+
+
+# %%
