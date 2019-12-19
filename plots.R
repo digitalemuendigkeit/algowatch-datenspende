@@ -1,6 +1,7 @@
 # import feather files from python
 # setwd("C:\\Users\\nilsp\\OneDrive\\Uni\\Hiwi\\Python\\algowatch-datenspende\\workingData")
 library(here)
+library(feather)
 library(tidyverse)
 list.filenames<-list.files(here("workingData"),pattern=".feather$")
 
