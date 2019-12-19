@@ -17,7 +17,7 @@ def cluster_df(res, meta_data_df, kw, date):
     kw_meta_df = helpers.get_kw_df(meta_data_df, clus, kw)
     if 'data' not in os.listdir('analysis'):
         os.mkdir(os.path.join('analysis', 'data'))
-    if date not in os.listdir(os.path('analysis', 'data')):
+    if date not in os.listdir(os.path.join('analysis', 'data')):
         os.mkdir(os.path.join('analysis', 'data', date))
     # remove backslash for Buendnis90
     path = os.path.join(
@@ -42,9 +42,7 @@ if __name__ == '__main__':
         pool = mp.Pool(mp.cpu_count()-1)
         path = os.path.join('Datasets', dataset)
         res, meta_data_df = helpers.read_json(path)
-        date = re.findall('\d{4}-\d{2}-\d{2}', dataset)[0]
-        print(date)
-        print(dataset)
+        date = re.findall(r'\d{4}-\d{2}-\d{2}', dataset)[0]
         for kw in meta_data_df.keyword.unique():
             results = pool.apply_async(
                 cluster_df,  
