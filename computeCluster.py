@@ -1,5 +1,5 @@
 
-import os.path
+import os
 import importlib
 import pandas as pd
 import numpy as np
@@ -15,6 +15,10 @@ def cluster_df(res, meta_data_df, kw, date):
     clus = helpers.apply_kmeans(res, kw)
     print("Done computing clusters for " + kw)
     kw_meta_df = helpers.get_kw_df(meta_data_df, clus, kw)
+    if 'data' not in os.listdir('analysis'):
+        os.mkdir(os.path.join('analysis', 'data'))
+    if date not in os.listdir(os.path('analysis', 'data')):
+        os.mkdir(os.path.join('analysis', 'data', date))
     # remove backslash for Buendnis90
     path = os.path.join(
         'analysis', 
