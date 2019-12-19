@@ -44,7 +44,10 @@ if __name__ == '__main__':
         res, meta_data_df = helpers.read_json(path)
         date = re.findall('\d{4}-\d{2}-\d{2}', dataset)[0]
         for kw in meta_data_df.keyword.unique():
-            results = pool.apply_async(cluster_df,  args=(res, meta_data_df, kw, date))         
+            results = pool.apply_async(
+                cluster_df,  
+                args=(res, meta_data_df, kw, str(date))
+            )         
         pool.close()
         pool.join()
 
