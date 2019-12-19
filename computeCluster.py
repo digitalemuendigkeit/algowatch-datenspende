@@ -43,6 +43,8 @@ if __name__ == '__main__':
         path = os.path.join('Datasets', dataset)
         res, meta_data_df = helpers.read_json(path)
         date = re.findall('\d{4}-\d{2}-\d{2}', dataset)[0]
+        print(date)
+        print(dataset)
         for kw in meta_data_df.keyword.unique():
             results = pool.apply_async(
                 cluster_df,  
