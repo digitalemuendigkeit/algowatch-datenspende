@@ -19,14 +19,11 @@ def get_timestamp(x):
 def get_country(x):
    return x.split()[0]
 
-
 # reads json dataset from path and returns result list and metadata DF
 def read_json(path):
    # read json file
    with open(path, 'r') as json_file:
       json_data = json.load(json_file)
-
-   # read json data to df
 
    # separate result lists from meta data
    results = json_data[-1] 
@@ -64,8 +61,6 @@ def read_json(path):
       key = tmp['result_hash']
       hashmap[key] = value
 
-   # create result lists
-
    # extract keywords
    keywords = meta_data_df.keyword.unique()
 
@@ -82,8 +77,6 @@ def read_json(path):
 
    # add names to result lists
    result_lists = dict(zip(keywords, result_lists))
-
-   # create dict of keywords and result lists
 
    # initialize dictionary with keywords as keys
    res = dict((kw, []) for kw in keywords)
@@ -105,10 +98,8 @@ def apply_kmeans(res, keyword):
    df = pd.DataFrame(rbo_mat)
 
    # conduct elbow method
-   wcss = cu.plot_elbow(11, df, False)
+   wcss = cu.plot_elbow(10, df, False)
    n_clusters = cu.optimal_number_of_clusters(10, wcss)
-
-   # apply k means
 
    # https://towardsdatascience.com/machine-learning-algorithms-part-9-k-means-example-in-python-f2ad05ed5203
    # conduct k-means clustering analysis

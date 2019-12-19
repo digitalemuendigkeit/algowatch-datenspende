@@ -15,12 +15,12 @@ def compute_rbo_matrix(kw_list, p):
 # https://towardsdatascience.com/machine-learning-algorithms-part-9-k-means-example-in-python-f2ad05ed5203
 def plot_elbow(max_k, X, showPlot=True):
     wcss = []
-    for i in range(1, max_k):
+    for i in range(1, max_k + 1):
         kmeans = KMeans(n_clusters=i, init='k-means++', max_iter=300, n_init=10, random_state=0)
         kmeans.fit(X)
         wcss.append(kmeans.inertia_)
     if(showPlot):
-        plt.plot(range(1, 11), wcss)
+        plt.plot(range(1, max_k + 1), wcss)
         plt.title('Elbow Method')
         plt.xlabel('Number of clusters')
         plt.ylabel('WCSS')
