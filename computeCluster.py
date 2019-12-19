@@ -19,8 +19,8 @@ def cluster_df(res, meta_data_df, kw, date):
     path = os.path.join(
         'analysis', 
         'data',
+        date,
         'kwMetadata_' 
-        + date
         + kw.replace("/", "_").replace("\\", "_").replace(" ", "_") 
         + '.feather'
     )
