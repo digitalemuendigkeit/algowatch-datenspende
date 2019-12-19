@@ -16,7 +16,7 @@ def cluster_df(res, meta_data_df, kw):
     print("Done computing clusters for " + kw)
     kw_meta_df = helpers.get_kw_df(meta_data_df, clus, kw)
     # remove backslash for Buendnis90
-    path = 'workingData/kwMetadata_' + kw.replace("\\", "") + '.feather'
+    path = 'workingData/kwMetadata_' + kw.replace("/", "_").replace("\\", "_").replace(" ", "_") + '.feather'
     feather.write_dataframe(kw_meta_df, path)
     return kw_meta_df
 
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         for kw in meta_data_df.keyword.unique():
             results = pool.apply_async(cluster_df,  args=(res, meta_data_df, kw))
             bar.next()          
-        pool.join()
         pool.close()
+        pool.join()
         bar.finish() 
 
