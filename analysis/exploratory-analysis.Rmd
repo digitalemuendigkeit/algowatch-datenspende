@@ -1,0 +1,30 @@
+---
+title: "Exploratory Analysis"
+author: "Johannes Nakayama"
+date: "19 12 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(feather)
+
+```
+
+```{r}
+
+angela_merkel <- read_feather(
+  file.path("..", "workingData", "kwMetadata_Angela_Merkel.feather")
+)
+
+```
+
+```{r}
+
+head(angela_merkel)
+
+```
+
