@@ -11,9 +11,9 @@ import re
 
 
 def cluster_df(res, meta_data_df, kw, date):
-    print("Computing clusters for " + kw)
+    # print("Computing clusters for " + kw)
     clus = helpers.apply_kmeans(res, kw)
-    print("Done computing clusters for " + kw)
+    # print("Done computing clusters for " + kw)
     kw_meta_df = helpers.get_kw_df(meta_data_df, clus, kw)
     if 'data' not in os.listdir('analysis'):
         os.mkdir(os.path.join('analysis', 'data'))
@@ -43,6 +43,7 @@ if __name__ == '__main__':
         path = os.path.join('Datasets', dataset)
         res, meta_data_df = helpers.read_json(path)
         date = re.findall(r'\d{4}-\d{2}-\d{2}', dataset)[0]
+        print(date)
         for kw in meta_data_df.keyword.unique():
             results = pool.apply_async(
                 cluster_df,  
