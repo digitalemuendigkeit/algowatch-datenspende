@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import rbo
 import datetime
+import re
 # import for k-means clustering
 import clustering_utilities as cu
 import matplotlib.pyplot as plt
@@ -19,6 +20,14 @@ def get_timestamp(x):
 def get_country(x):
    return x.split()[0]
 
+def get_domains(results):
+   expression = "(?:https?:\/\/)?(?:www\.)?([^\/\r\n]+)(?:\/[^\r\n]*)?"
+   domains = []
+   for result in results:
+      url = result["sourceUrl"]
+      domain = re.findall(expression, url)[0]
+      domains.append(domain)
+   return domains
 # reads json dataset from path and returns result list and metadata DF
 def read_json(path):
    # read json file
