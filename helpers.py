@@ -4,6 +4,7 @@ import os.path
 import importlib
 import pandas as pd
 import numpy as np
+import math
 import rbo
 import datetime
 import re
@@ -21,13 +22,20 @@ def get_country(x):
    return x.split()[0]
 
 def get_domains(results):
-   expression = "(?:https?:\/\/)?(?:www\.)?([^\/\r\n]+)(?:\/[^\r\n]*)?"
+   expression = r"(?:https?:\/\/)?(?:www\.)?([^\/\r\n]+)(?:\/[^\r\n]*)?"
    domains = []
    for result in results:
       url = result["sourceUrl"]
       domain = re.findall(expression, url)[0]
       domains.append(domain)
    return domains
+
+def get_full_url(results):
+   urls = []
+   for result in results:
+      url = result["sourceUrl"]
+      urls.append(url)
+   return urls
 # reads json dataset from path and returns result list and metadata DF
 def read_json(path):
    # read json file
@@ -128,3 +136,57 @@ def get_kw_df(meta_data_df, clus, keyword):
    # extract country
    kwMetadata['country'] = kwMetadata['geo_location'].apply(get_country)
    return kwMetadata
+
+def map_all_urls(results):
+   """
+      results: list of result dicts
+      returns a dict of all urls mapped to an integer value, scaled to the clostest
+      power of 2 in order to be mapped on the hilber curve
+   """
+   urls= []
+   # iterate over all result lists
+   for result in results:
+      # iterate over all entries in one result list
+      for entry in result["result"]:
+         urls.append(entry["sourceUrl"])
+   # remove duplicates
+   urls = list(set(urls))
+   # sort
+   urls.sort()
+   #find closest power of 2 to scale
+   hilbert_length = math.ceil(np.log2(len(urls)))
+   scale = 2**hilbert_length / len(urls)
+   # get dict with url as key and index as value
+   url_map = {}
+   for idx, url in enumerate(urls):
+      url_map[url] = int(idx*scale)
+   return url_map
+
+def append_urls(results, urls):
+   # iterate over all result lists
+   for result in results:
+      # iterate over all entries in one result list
+      for entry in result["result"]:
+         urls.append(entry["sourceUrl"])
+   # remove duplicates
+   urls = list(set(urls))
+   return urls
+ 
+def map_urls(urls):
+   """
+      urls: list of ulrs strings 
+      returns a dict of all urls mapped to an integer value, scaled to the clostest
+      power of 2 in order to be mapped on the hilber curve
+   """
+   # remove duplicates
+   urls = list(set(urls))
+   # sort
+   urls.sort()
+   #find closest power of 2 to scale
+   hilbert_length = math.ceil(np.log2(len(urls)))
+   scale = 2**hilbert_length / len(urls)
+   # get dict with url as key and index as value
+   url_map = {}
+   for idx, url in enumerate(urls):
+      url_map[url] = int(idx*scale)
+   return url_map
