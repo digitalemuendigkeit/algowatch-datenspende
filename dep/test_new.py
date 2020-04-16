@@ -190,7 +190,7 @@ for idx in range(0, clus.cluster.max() + 1):
     print('Average search time cluster %d: %s, std:%.2f' % (idx, mean.strftime("%H:%M"), std))
 
 # store for later use without long computation
-kwMetadata.to_pickle('workingData/kwMetadata_' + test_keyword + '.pkl')
+# kwMetadata.to_pickle('workingData/kwMetadata_' + test_keyword + '.pkl')
 
 # %% load already computed clusters
 kwMetadata = pd.read_pickle('workingData/kwMetadata_' + test_keyword + '.pkl')
