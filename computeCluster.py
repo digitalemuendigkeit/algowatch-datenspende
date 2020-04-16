@@ -11,10 +11,7 @@ import re
 
 
 def cluster_df(res, meta_data_df, kw, date):
-    # print("Computing clusters for " + kw)
-    clus = helpers.apply_kmeans(res, kw)
-    # print("Done computing clusters for " + kw)
-    kw_meta_df = helpers.get_kw_df(meta_data_df, clus, kw)
+
     if 'data' not in os.listdir('analysis'):
         os.mkdir(os.path.join('analysis', 'data'))
     if date not in os.listdir(os.path.join('analysis', 'data')):
@@ -28,8 +25,14 @@ def cluster_df(res, meta_data_df, kw, date):
         + kw.replace("/", "_").replace("\\", "_").replace(" ", "_") 
         + '.feather'
     )
-    feather.write_dataframe(kw_meta_df, path)
-    return kw_meta_df
+    if not os.path.isfile(path):
+        # print("Computing clusters for " + kw)
+        clus = helpers.apply_kmeans(res, kw)
+        # print("Done computing clusters for " + kw)
+        kw_meta_df = helpers.get_kw_df(meta_data_df, clus, kw)
+        feather.write_dataframe(kw_meta_df, path)
+        return kw_meta_df
+    return None
 
 if __name__ == '__main__':
     datasets = []
