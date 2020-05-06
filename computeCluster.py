@@ -23,14 +23,16 @@ def cluster_df(res, meta_data_df, kw, date):
         date,
         'kwMetadata_' 
         + kw.replace("/", "_").replace("\\", "_").replace(" ", "_") 
-        + '.feather'
+        + '.pkl'
     )
     if not os.path.isfile(path):
+        print(path)
         # print("Computing clusters for " + kw)
         clus = helpers.apply_kmeans(res, kw)
         # print("Done computing clusters for " + kw)
         kw_meta_df = helpers.get_kw_df(meta_data_df, clus, kw)
-        feather.write_dataframe(kw_meta_df, path)
+        # feather.write_dataframe(kw_meta_df, path)
+        kw_meta_df.to_pickle(path)
         return kw_meta_df
     return None
 

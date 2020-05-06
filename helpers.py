@@ -81,30 +81,44 @@ def read_json(path):
    # extract keywords
    keywords = meta_data_df.keyword.unique()
 
+   #initialize colum vor urls
+   meta_data_df["urls"] = ""
+
    # initialize empty list
-   result_lists = [None] * (len(keywords))
+   # result_lists = [None] * (len(keywords))
+   result_lists = []
 
    for idx, keyword in enumerate(keywords):
       tmp = []
-      for _, search in meta_data_df[meta_data_df.keyword == keyword].iterrows():
+      #TODO: delete rows with empty results
+      for jdx, search in meta_data_df[meta_data_df.keyword == keyword].iterrows():
          #check whether results are empty before appending
          if(hashmap[search.result_hash] is not None):
-               tmp.append(hashmap[search.result_hash])
-      result_lists[idx] = tmp
+            urls = []
+            for result in hashmap[search.result_hash]:
+               urls.append(result["sourceUrl"])
+            if len(urls)>0:
+               tmp.append(urls)
+               meta_data_df["urls"][jdx] = urls
+            else:
+               meta_data_df = meta_data_df.drop(jdx)
+      result_lists.append(tmp)
+
+   meta_data_df = meta_data_df.reset_index()
 
    # add names to result lists
-   result_lists = dict(zip(keywords, result_lists))
+   res = dict(zip(keywords, result_lists))
 
    # initialize dictionary with keywords as keys
-   res = dict((kw, []) for kw in keywords)
+   # res = dict((kw, []) for kw in keywords)
 
    # unpack result_lists into res
-   for kw in keywords:
-      for i in range(len(result_lists[kw])):
-         tmp = []
-         for j in range(len(result_lists[kw][i])):
-               tmp.append(result_lists[kw][i][j]["sourceUrl"])
-         res[kw].append(tmp)
+   # for kw in keywords:
+   #    for i in range(len(result_lists[kw])):
+   #       tmp = []
+   #       for j in range(len(result_lists[kw][i])):
+   #             tmp.append(result_lists[kw][i][j]["sourceUrl"])
+   #       res[kw].append(tmp)
 
    return res, meta_data_df
 

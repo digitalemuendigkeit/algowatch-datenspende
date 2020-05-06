@@ -93,7 +93,10 @@ def agreement(list1, list2, depth):
     >>> _numtest(agreement([{1, 2}, 3], [1, {2, 3}], 2))
     '1.000'
     """
+    if len(list1)==0 or len(list2)==0:
+        return 0
     len_intersection, len_set1, len_set2 = raw_overlap(list1, list2, depth)
+    
     return 2 * len_intersection / (len_set1 + len_set2)
 
 
