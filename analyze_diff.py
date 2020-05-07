@@ -95,15 +95,9 @@ fig, ax = plt.subplots()
 ax.scatter(x=kwMetadata.timestamp, y=kwMetadata.cluster, c= kwMetadata.cluster, alpha= 0.4)
 
 
-#%% map urls to numbers
-url_map = map_all_urls(results)
 
 
-#%%
-# we have 2**(N*p) numbers on the curve
-N=2 # 2 dimensions
-p= 7 #2**(2*7) =16384 > 10943 = len(urls) 
-hilbert_curve = HilbertCurve(p, N)
+
 
 # %% plot clusters on hilber curve
 curve = np.zeros(((len(kwMetadata)*10,3)))
@@ -124,20 +118,34 @@ plt.show()
 sns.scatterplot(x=x, y=y,hue=c, alpha=0.3, x_jitter=True, y_jitter=True, palette="bright")
 
 # %%
-# get all feather files for a keyword
+# get all pickle files for a keyword
 import glob
 keyword = "AfD"
-files = glob.glob('analysis/data/**/kwMetadata_'+keyword+'.feather', recursive=True)
+files = glob.glob('analysis/data/**/kwMetadata_'+keyword+'.pkl', recursive=True)
 
+
+# %%
+# get previously computed urls
+with open("workingData/all_urls.pkl", "rb") as fp:
+    all_urls = pickle.load(fp)
+
+#%% 
+
+#%% get hilbert curve and map urls to number
+# we have 2**(N*p) numbers on the curve
+N=2 # 2 dimensions
+# map urls to numbers
+url_map, p = map_all_urls(all_urls, N)
+hilbert_curve = HilbertCurve(p, N)
 
 # %%
 # iterate over all results
 x = y = c = d = []
 for day, file in enumerate(files[:5]):
     # import dataset
-    kwMetadata = pd.read_feather(file)
+    kwMetadata = pd.read_pickle(file)
     # get full url
-    kwMetadata["urls"] = kwMetadata["result_hash"].apply(lambda x: get_full_url(hashmap[x]))
+    # kwMetadata["urls"] = kwMetadata["result_hash"].apply(lambda x: get_full_url(hashmap[x]))
     #get hilbert curve for day
     curve = np.zeros(((len(kwMetadata)*10,4)))
     for idx in range(len(kwMetadata)):
@@ -172,8 +180,3 @@ for dataset in datasets:
     #     key = tmp['result_hash']
     #     hashmap[key] = value
     all_urls = append_urls(results, all_urls)
-
-# %%
-# get previously computed urls
-with open("workingData/all_urls.pkl", "rb") as fp:
-    all_urls = pickle.load(fp)

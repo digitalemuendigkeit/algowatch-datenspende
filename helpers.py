@@ -151,30 +151,32 @@ def get_kw_df(meta_data_df, clus, keyword):
    kwMetadata['country'] = kwMetadata['geo_location'].apply(get_country)
    return kwMetadata
 
-def map_all_urls(results):
+def map_all_urls(urls, n=2):
    """
-      results: list of result dicts
+      urls: list of all results
       returns a dict of all urls mapped to an integer value, scaled to the clostest
       power of 2 in order to be mapped on the hilber curve
    """
-   urls= []
-   # iterate over all result lists
-   for result in results:
-      # iterate over all entries in one result list
-      for entry in result["result"]:
-         urls.append(entry["sourceUrl"])
-   # remove duplicates
-   urls = list(set(urls))
+   # urls= []
+   # # iterate over all result lists
+   # for result in results:
+   #    # iterate over all entries in one result list
+   #    for entry in result["result"]:
+   #       urls.append(entry["sourceUrl"])
+   # # remove duplicates
+   # urls = list(set(urls))
    # sort
    urls.sort()
-   #find closest power of 2 to scale
+   #find closest *even* power of 2 to scale
    hilbert_length = math.ceil(np.log2(len(urls)))
+   hilbert_length += hilbert_length % 2
    scale = 2**hilbert_length / len(urls)
+   p= int(hilbert_length / n)
    # get dict with url as key and index as value
    url_map = {}
    for idx, url in enumerate(urls):
       url_map[url] = int(idx*scale)
-   return url_map
+   return url_map, p
 
 def append_urls(results, urls):
    # iterate over all result lists
