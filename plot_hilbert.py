@@ -65,20 +65,26 @@ def plot_hilbert_curve(keyword):
         plt.title(keyword + "    " + date)
         plt.savefig("analysis/plots/hilbert_"+keyword+"_"+str(day_index).zfill(2)+".png")
         plt.clf()
+        return x, y, c, pos
 
 def merge_to_video(keyword):
-    command = "ffmpeg -r 3 -f image2 -s 640x480 -i hilbert_"+keyword + "_%%02d.png -vcodec libx264 -crf 25  -pix_fmt yuv420p " + keyword +".mp4"
+    command = "ffmpeg -r 3 -f image2 -s 640x480 -i analysis\\plots\\hilbert_"+keyword + "_%02d.png -vcodec libx264 -crf 25  -pix_fmt yuv420p analysis\\videos\\" + keyword +".mp4"
     os.system(command)
 
 if __name__ == "__main__":
+    # keywords = [
+    # 'Katrin_Göring-Eckardt', 'Christian_Lindner', 'FDP', 'AfD',
+    # 'Alexander_Gauland', 'Martin_Schulz', 'SPD', 'Sahra_Wagenknecht',
+    # 'Alice_Weidel', 'CDU', 'Die_Linke', 'CSU', 'Angela_Merkel',
+    # 'Dietmar_Bartsch', 'Cem_Özdemir', 'Bündnis90_Die_Grünen'
+    # ]
     keywords = [
-    'Katrin_Göring-Eckardt', 'Christian_Lindner', 'FDP', 'AfD',
-    'Alexander_Gauland', 'Martin_Schulz', 'SPD', 'Sahra_Wagenknecht',
-    'Alice_Weidel', 'CDU', 'Die_Linke', 'CSU', 'Angela_Merkel',
+    'Die_Linke', 'CSU', 'Angela_Merkel',
     'Dietmar_Bartsch', 'Cem_Özdemir', 'Bündnis90_Die_Grünen'
     ]
     for keyword in keywords:
         plot_hilbert_curve(keyword)
+        merge_to_video(keyword)
 
 
 # convert to video
