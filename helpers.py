@@ -23,6 +23,9 @@ def get_country(x):
    return x.split()[0]
 
 def get_domains(results):
+   """
+      extract the domains from a results entry in json file
+   """
    expression = r"(?:https?:\/\/)?(?:www\.)?([^\/\r\n]+)(?:\/[^\r\n]*)?"
    domains = []
    for result in results:
@@ -32,11 +35,18 @@ def get_domains(results):
    return domains
 
 def get_domain_from_url(url):
+   '''
+      get domain (including tld) from a url string
+   '''
    expression = r"(?:https?:\/\/)?(?:www\.)?([^\/\r\n]+)(?:\/[^\r\n]*)?"
    domain = re.findall(expression, url)[0]
    return domain
 
 def get_letter_indices(url_map):
+   '''
+      returns for each letter in the alphabet the index of the first url starting with the letter
+      NB: only works with trimmed urls (protocoll and www removed)
+   '''
    indices = {}
    for l in list(string.ascii_lowercase):
       for url, idx in url_map.items():
@@ -46,6 +56,10 @@ def get_letter_indices(url_map):
    return indices
 
 def get_domain_indices(url_map, domains):
+   '''
+      returns for each domain the index of the first url starting with the domain
+      NB: only works with trimmed urls (protocoll and www removed)
+   '''
    indices = {}
    for domain in domains:
       for url, idx in url_map.items():
@@ -57,7 +71,9 @@ def get_domain_indices(url_map, domains):
 
 
 def trim_url(url):
-   # remove protocoll and www for sorting
+   '''
+      remove protocoll and www for sorting
+   '''
    expression = r"(?:https?:\/\/)?(?:www\.)?([^\/\r\n]+\/[^\r\n]*)?"
    trimmed = re.findall(expression, url)[0]
    return trimmed
@@ -189,14 +205,6 @@ def map_all_urls(urls, n=2):
       returns a dict of all urls mapped to an integer value, scaled to the clostest
       power of 2 in order to be mapped on the hilber curve
    """
-   # urls= []
-   # # iterate over all result lists
-   # for result in results:
-   #    # iterate over all entries in one result list
-   #    for entry in result["result"]:
-   #       urls.append(entry["sourceUrl"])
-   # # remove duplicates
-   # urls = list(set(urls))
    # sort
    urls.sort()
    #find closest *even* power of 2 to scale
@@ -211,6 +219,12 @@ def map_all_urls(urls, n=2):
    return url_map, p
 
 def append_urls(results, urls):
+   """
+      creates a list of all urls in the results
+      results: results object from the json file
+      urls: list of urls that were found in other result files
+      returns: list with all urls, without duplicates
+   """
    # iterate over all result lists
    for result in results:
       # iterate over all entries in one result list
@@ -220,21 +234,3 @@ def append_urls(results, urls):
    urls = list(set(urls))
    return urls
  
-def map_urls(urls):
-   """
-      urls: list of ulrs strings 
-      returns a dict of all urls mapped to an integer value, scaled to the clostest
-      power of 2 in order to be mapped on the hilber curve
-   """
-   # remove duplicates
-   urls = list(set(urls))
-   # sort
-   urls.sort()
-   #find closest power of 2 to scale
-   hilbert_length = math.ceil(np.log2(len(urls)))
-   scale = 2**hilbert_length / len(urls)
-   # get dict with url as key and index as value
-   url_map = {}
-   for idx, url in enumerate(urls):
-      url_map[url] = int(idx*scale)
-   return url_map
