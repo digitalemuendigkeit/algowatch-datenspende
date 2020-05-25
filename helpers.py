@@ -8,6 +8,7 @@ import math
 import rbo
 import datetime
 import re
+import string
 # import for k-means clustering
 import clustering_utilities as cu
 import matplotlib.pyplot as plt
@@ -29,6 +30,37 @@ def get_domains(results):
       domain = re.findall(expression, url)[0]
       domains.append(domain)
    return domains
+
+def get_domain_from_url(url):
+   expression = r"(?:https?:\/\/)?(?:www\.)?([^\/\r\n]+)(?:\/[^\r\n]*)?"
+   domain = re.findall(expression, url)[0]
+   return domain
+
+def get_letter_indices(url_map):
+   indices = {}
+   for l in list(string.ascii_lowercase):
+      for url, idx in url_map.items():
+         if url[0] == l:
+            indices[l] = idx
+            break
+   return indices
+
+def get_domain_indices(url_map, domains):
+   indices = {}
+   for domain in domains:
+      for url, idx in url_map.items():
+         if url.startswith(domain):
+            indices[domain] = idx
+            break
+   return indices
+
+
+
+def trim_url(url):
+   # remove protocoll and www for sorting
+   expression = r"(?:https?:\/\/)?(?:www\.)?([^\/\r\n]+\/[^\r\n]*)?"
+   trimmed = re.findall(expression, url)[0]
+   return trimmed
 
 def get_full_url(results):
    urls = []
