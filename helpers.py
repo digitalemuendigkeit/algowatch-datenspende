@@ -78,6 +78,11 @@ def trim_url(url):
    trimmed = re.findall(expression, url)[0]
    return trimmed
 
+def strip_google_link(url):
+   expression = r'(?:google\.de\/url\?q=)?(?:https?:\/\/)?(?:www.)?(.*)'
+   stripped = re.findall(expression, url)[0]
+   return stripped
+
 def get_full_url(results):
    urls = []
    for result in results:
